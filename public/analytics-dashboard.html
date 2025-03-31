@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="chart-container">
+            <canvas id="learningChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="performanceChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="sourceChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="confidenceChart"></canvas>
+        </div>
+    </div>
+
+    <div id="backup-controls">
+        <button onclick="createBackup()">Create Backup</button>
+        <button onclick="restoreBackup()">Restore from Backup</button>
+    </div>
+
+    <script>
+        // Initialize charts and update data
+        async function updateDashboard() {
+            const response = await fetch('/analytics/report');
+            const data = await response.json();
+            updateCharts(data);
+        }
+
+        async function createBackup() {
+            try {
+                const response = await fetch('/backup/create', {
+                    method: 'POST'
+                });
+                const result = await response.json();
+                alert(`Backup created successfully: ${result.path}`);
+            } catch (error) {
+                alert('Backup failed: ' + error.message);
+            }
+        }
+
+        // Update every 5 minutes
+        setInterval(updateDashboard, 300000);
+        updateDashboard();
+    </script>
+</body>
+</html> 

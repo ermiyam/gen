@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Marketing AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .main-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        .dashboard-section {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .metrics-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .ai-input {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .result-area {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            margin-top: 20px;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .metric-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-card p-4">
+            <h1 class="text-center mb-4">Marketing AI Assistant</h1>
+            
+            <!-- AI Input Section -->
+            <div class="ai-input">
+                <h4 class="mb-3">How can I help you with marketing today?</h4>
+                <textarea id="aiInput" class="form-control mb-3" rows="4" 
+                    placeholder="Ask me anything about your marketing needs. For example:
+- Analyze sentiment of these social media posts...
+- Predict customer behavior based on this data...
+- Help me score these leads...
+- Set up an automated campaign for...
+- Monitor brand mentions of...
+- Analyze this customer feedback..."></textarea>
+                <button onclick="processAIRequest()" class="btn btn-primary">Get AI Insights</button>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div class="dashboard-section">
+                <h4 class="mb-4">Marketing Dashboard</h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="metrics-card">
+                            <div class="metric-value" id="sentimentScore">--</div>
+                            <div class="metric-label">Sentiment Score</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="metrics-card">
+                            <div class="metric-value" id="customerEngagement">--</div>
+                            <div class="metric-label">Customer Engagement</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="metrics-card">
+                            <div class="metric-value" id="leadScore">--</div>
+                            <div class="metric-label">Lead Quality Score</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Response Area -->
+                <div class="result-area mt-4" id="aiResult">
+                    Your AI insights will appear here...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function processAIRequest() {
+            const input = document.getElementById('aiInput').value;
+            const resultArea = document.getElementById('aiResult');
+            
+            try {
+                const response = await fetch('/api/process', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: input })
+                });
+
+                const result = await response.json();
+                
+                // Update dashboard metrics
+                updateDashboardMetrics(result);
+                
+                // Display formatted results
+                resultArea.innerHTML = formatResults(result);
+            } catch (error) {
+                resultArea.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            }
+        }
+
+        function updateDashboardMetrics(result) {
+            // Update metrics based on the result
+            document.getElementById('sentimentScore').textContent = 
+                typeof result.sentiment === 'number' ? 
+                result.sentiment.toFixed(2) : result.sentiment;
+            
+            document.getElementById('customerEngagement').textContent = 
+                typeof result.engagement === 'number' ? 
+                result.engagement.toFixed(2) : result.engagement;
+            
+            document.getElementById('leadScore').textContent = 
+                typeof result.leadScore === 'number' ? 
+                result.leadScore.toFixed(2) : result.leadScore;
+        }
+
+        function formatResults(result) {
+            if (result.error) {
+                return `<div class="alert alert-danger">${result.error}</div>`;
+            }
+            
+            let html = '<div class="p-3">';
+            
+            if (result.message) {
+                html += `<div class="alert alert-info">${result.message}</div>`;
+            }
+            
+            html += `<pre class="mb-0">${JSON.stringify(result, null, 2)}</pre></div>`;
+            return html;
+        }
+    </script>
+</body>
+</html> 

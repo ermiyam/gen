@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek AI Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .chat-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            background: #0d6efd;
+            color: white;
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .chat-messages {
+            height: 500px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #ffffff;
+        }
+        
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+        
+        .user-message {
+            background: #e9ecef;
+            margin-left: auto;
+        }
+        
+        .ai-message {
+            background: #f8f9fa;
+            margin-right: auto;
+        }
+        
+        .chat-input {
+            padding: 1rem;
+            background: #ffffff;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .stats-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .typing-indicator {
+            display: none;
+            padding: 0.5rem;
+            color: #6c757d;
+        }
+        
+        .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #6c757d;
+            animation: wave 1.3s linear infinite;
+            margin-right: 3px;
+        }
+        
+        .dot:nth-child(2) { animation-delay: -1.1s; }
+        .dot:nth-child(3) { animation-delay: -0.9s; }
+        
+        @keyframes wave {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
+
+        .metric-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .metric-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="chat-container">
+            <div class="chat-header">
+                <h4 class="mb-0">Gen</h4>
+                <small>Your AI Assistant</small>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai-message">
+                    Hello! I'm your AI assistant. How can I help you today?
+                </div>
+            </div>
+            
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            
+            <div class="chat-input">
+                <form id="chatForm" class="d-flex gap-2">
+                    <input type="text" 
+                           id="userInput" 
+                           class="form-control" 
+                           placeholder="Type your message here..."
+                           autocomplete="off">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="stats-panel">
+            <h5>System Statistics</h5>
+            <div class="row" id="statsContent">
+                <div class="col-md-6">
+                    <div class="metric-card">
+                        <h6>Server Stats</h6>
+                        <div id="serverStats">Loading...</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="metric-card">
+                        <h6>Model Info</h6>
+                        <div id="modelInfo">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chatMessages');
+        const chatForm = document.getElementById('chatForm');
+        const userInput = document.getElementById('userInput');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const serverStats = document.getElementById('serverStats');
+        const modelInfo = document.getElementById('modelInfo');
+        
+        // Add message to chat
+        function addMessage(message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+            messageDiv.textContent = message;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Show/hide typing indicator
+        function setTyping(isTyping) {
+            typingIndicator.style.display = isTyping ? 'block' : 'none';
+        }
+        
+        // Format number to 2 decimal places
+        function formatNumber(num) {
+            return Number(num).toFixed(2);
+        }
+
+        // Format memory size to MB or GB
+        function formatMemory(bytes) {
+            const mb = bytes / (1024 * 1024);
+            if (mb > 1024) {
+                return `${formatNumber(mb/1024)} GB`;
+            }
+            return `${formatNumber(mb)} MB`;
+        }
+        
+        // Handle chat form submission
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = userInput.value.trim();
+            if (!message) return;
+            
+            // Add user message
+            addMessage(message, true);
+            userInput.value = '';
+            
+            // Show typing indicator
+            setTyping(true);
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                // Add AI response
+                addMessage(data.response);
+                
+                // Update stats
+                updateStats();
+                
+            } catch (error) {
+                addMessage(`Error: ${error.message}`);
+            } finally {
+                setTyping(false);
+            }
+        });
+        
+        // Update statistics
+        async function updateStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Update server stats
+                const stats = data.server_stats;
+                serverStats.innerHTML = `
+                    <p>Requests Processed: ${stats.requests_processed}</p>
+                    <p>Average Response Time: ${formatNumber(stats.average_response_time)}s</p>
+                    <p>Error Count: ${stats.error_count}</p>
+                    <p>Queue Length: ${stats.queue_length}</p>
+                `;
+
+                // Update model info
+                const model = data.model_info;
+                modelInfo.innerHTML = `
+                    <p>Model: ${model.model_name}</p>
+                    <p>Device: ${model.device}</p>
+                    <p>Parameters: ${(model.model_parameters / 1e9).toFixed(2)}B</p>
+                    <p>GPU Memory: ${formatMemory(model.gpu_memory_allocated)}</p>
+                `;
+
+            } catch (error) {
+                serverStats.innerHTML = `Error loading server stats: ${error.message}`;
+                modelInfo.innerHTML = `Error loading model info: ${error.message}`;
+            }
+        }
+        
+        // Initial stats update
+        updateStats();
+        
+        // Update stats periodically
+        setInterval(updateStats, 30000);
+    </script>
+</body>
+</html> 

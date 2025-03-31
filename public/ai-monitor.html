@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Learning Monitor</title>
+    <style>
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+        .ai-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .progress-bar {
+            height: 20px;
+            background: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #4CAF50;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="ai-card">
+            <h2>CodeMaster AI</h2>
+            <div id="coding-progress"></div>
+            <h3>Recent Fixes</h3>
+            <div id="coding-fixes"></div>
+        </div>
+        <div class="ai-card">
+            <h2>Gen Marketing AI</h2>
+            <div id="marketing-progress"></div>
+            <h3>Recent Strategies</h3>
+            <div id="marketing-strategies"></div>
+        </div>
+    </div>
+    <script src="/js/ai-monitor.js"></script>
+</body>
+</html> 
