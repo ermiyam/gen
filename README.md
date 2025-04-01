@@ -14,7 +14,7 @@ A specialized language model for content generation and analysis.
 
 1. Clone the repository:
 ```bash
-git clone https://gitlab.com/nexgencreators/gen.git
+git clone https://github.com/ermiyam/gen.git
 cd gen
 ```
 
@@ -65,11 +65,11 @@ This project uses:
 - Transformers
 - Flask
 - Cursor IDE
-- GitLab for version control
+- GitHub for version control
 
 ## Syncing Changes
 
-To sync changes with GitLab, use the PowerShell script:
+To sync changes with GitHub, use the PowerShell script:
 ```powershell
 .\sync.ps1
 ```
