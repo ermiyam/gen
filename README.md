@@ -12,9 +12,9 @@ A specialized language model for marketing content generation and analysis.
 
 ## Setup
 
-1. Clone the repository:
+1. Clone the repository from Azure DevOps:
 ```bash
-git clone https://github.com/ermiyam/marketing-llm-project.git
+git clone https://dev.azure.com/your-org/marketing-llm-project/_git/marketing-llm-project
 cd marketing-llm-project
 ```
 
@@ -65,6 +65,14 @@ This project uses:
 - Transformers
 - Flask
 - Cursor IDE
+- Azure DevOps for version control
+
+## Syncing Changes
+
+To sync changes with Azure DevOps, use the PowerShell script:
+```powershell
+.\sync.ps1
+```
 
 ## License
 
