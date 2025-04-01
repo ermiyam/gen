@@ -1,27 +1,27 @@
-# Marketing LLM Project
+# gen
 
-A specialized language model for marketing content generation and analysis.
+A specialized language model for content generation and analysis.
 
 ## Features
 
 - Code generation with specialized models
-- Marketing content analysis
+- Content analysis and optimization
 - Performance tracking and metrics
 - Real-time response generation
 - Attention pattern visualization
 
 ## Setup
 
-1. Clone the repository from Azure DevOps:
+1. Clone the repository:
 ```bash
-git clone https://dev.azure.com/your-org/marketing-llm-project/_git/marketing-llm-project
-cd marketing-llm-project
+git clone https://gitlab.com/nexgencreators/gen.git
+cd gen
 ```
 
 2. Create and activate virtual environment:
 ```bash
-python -m venv tensorflow_env
-source tensorflow_env/bin/activate  # On Windows: tensorflow_env\Scripts\activate
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
 3. Install dependencies:
@@ -37,7 +37,7 @@ python src/ai_model/response_handler.py
 ## Project Structure
 
 ```
-marketing-llm-project/
+gen/
 ├── src/
 │   ├── ai_model/
 │   │   ├── response_handler.py
@@ -65,11 +65,11 @@ This project uses:
 - Transformers
 - Flask
 - Cursor IDE
-- Azure DevOps for version control
+- GitLab for version control
 
 ## Syncing Changes
 
-To sync changes with Azure DevOps, use the PowerShell script:
+To sync changes with GitLab, use the PowerShell script:
 ```powershell
 .\sync.ps1
 ```
