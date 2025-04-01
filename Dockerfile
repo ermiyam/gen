@@ -1,18 +1,27 @@
-# Use official Node.js image
-FROM node:16-slim
+FROM python:3.9-slim
 
-# Create app directory
 WORKDIR /app
 
-# Install app dependencies
-COPY package*.json ./
-RUN npm install --production
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-# Bundle app source
+# Copy requirements first to leverage Docker cache
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
 COPY . .
 
-# Expose port
-EXPOSE 8080
+# Set environment variables
+ENV FLASK_APP=src/api/server.py
+ENV FLASK_ENV=production
+ENV PYTHONUNBUFFERED=1
+ENV APP_NAME=gen
 
-# Start command
-CMD [ "npm", "start" ] 
+# Expose port
+EXPOSE 5000
+
+# Run the application
+CMD ["flask", "run", "--host=0.0.0.0"] 
