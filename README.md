@@ -77,6 +77,7 @@ To sync changes with GitHub, use the PowerShell script:
 ## License
 
 MIT License
+<<<<<<< HEAD
 
 # Mak AI Learning System
 
@@ -149,3 +150,5 @@ python src/process_manager.py stop
 - Reddit and Twitter integration is temporarily disabled
 - The system uses quality filtering to ensure only high-quality content is used for training
 - Training data is automatically formatted for the model
+=======
+>>>>>>> 3b3679563de04f5cf2505956818571c6809a5593

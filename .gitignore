@@ -28,15 +28,24 @@ wheels/
 
 # Virtual Environment
 venv/
+<<<<<<< HEAD
 ENV/
 env/
 .env
+=======
+env/
+ENV/
+.env
+.venv
+tensorflow_env/
+>>>>>>> 3b3679563de04f5cf2505956818571c6809a5593
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
+<<<<<<< HEAD
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -63,6 +72,31 @@ data/
 # System
 .DS_Store
 Thumbs.db
+=======
+.DS_Store
+
+# ML specific
+.model_cache/
+checkpoints/
+*.bin
+*.pt
+*.pth
+*.onnx
+*.h5
+logs/
+cache/
+
+# Data files
+*.csv
+*.json
+*.jsonl
+*.txt
+*.log
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+>>>>>>> 3b3679563de04f5cf2505956818571c6809a5593
 
 # Local development
 .env.local
