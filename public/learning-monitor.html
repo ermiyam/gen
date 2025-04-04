@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Learning Monitor</title>
+    <style>
+        /* Add your styles here */
+    </style>
+</head>
+<body>
+    <div id="monitor-container">
+        <h2>AI Learning Status</h2>
+        <div id="status-display"></div>
+        
+        <h3>Configure Learning</h3>
+        <div id="config-form">
+            <textarea id="config-input" rows="10" cols="50" placeholder="Enter configuration JSON..."></textarea>
+            <button onclick="updateConfig()">Update Configuration</button>
+        </div>
+
+        <h3>Learning Statistics</h3>
+        <div id="stats-display"></div>
+    </div>
+
+    <script>
+        // Update status every 30 seconds
+        setInterval(updateStatus, 30000);
+
+        async function updateStatus() {
+            try {
+                const response = await fetch('/learning/status');
+                const status = await response.json();
+                displayStatus(status);
+            } catch (error) {
+                console.error('Error updating status:', error);
+            }
+        }
+
+        async function updateConfig() {
+            const configInput = document.getElementById('config-input');
+            try {
+                const config = JSON.parse(configInput.value);
+                const response = await fetch('/learning/configure', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(config)
+                });
+                const result = await response.json();
+                alert('Configuration updated successfully!');
+            } catch (error) {
+                alert('Error updating configuration: ' + error.message);
+            }
+        }
+
+        function displayStatus(status) {
+            document.getElementById('status-display').innerHTML = `
+                <p>Learning Active: ${status.isActive}</p>
+                <p>Last Update: ${new Date(status.lastUpdate).toLocaleString()}</p>
+                <p>Current Focus: ${status.currentFocus.join(', ')}</p>
+                <p>Topics Learned: ${status.statistics.topicsLearned}</p>
+                <p>Knowledge Base Size: ${status.statistics.knowledgeSize} entries</p>
+            `;
+        }
+
+        // Initial status update
+        updateStatus();
+    </script>
+</body>
+</html> 

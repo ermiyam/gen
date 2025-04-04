@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Advanced Code Monitor</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <style>
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        .metrics {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .metric-card {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .status-good { color: #28a745; }
+        .status-warning { color: #ffc107; }
+        .status-error { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="panel full-width">
+            <h2>System Status</h2>
+            <div class="metrics">
+                <div class="metric-card">
+                    <h3>Active Files</h3>
+                    <div id="active-files-count">0</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Issues Fixed</h3>
+                    <div id="fixes-count">0</div>
+                </div>
+                <div class="metric-card">
+                    <h3>Prevention Rate</h3>
+                    <div id="prevention-rate">0%</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Real-time Issues</h2>
+            <canvas id="issues-chart"></canvas>
+        </div>
+        
+        <div class="panel">
+            <h2>Fix Success Rate</h2>
+            <canvas id="fixes-chart"></canvas>
+        </div>
+        
+        <div class="panel full-width">
+            <h2>Recent Activity</h2>
+            <div id="activity-log"></div>
+        </div>
+        
+        <div class="panel">
+            <h2>Code Quality Metrics</h2>
+            <div id="quality-metrics"></div>
+        </div>
+        
+        <div class="panel">
+            <h2>Predictions</h2>
+            <div id="predictions-list"></div>
+        </div>
+    </div>
+
+    <script>
+        // Connect to WebSocket
+        const ws = new WebSocket('ws://localhost:3001');
+        
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            updateDashboard(data);
+        };
+
+        function updateDashboard(data) {
+            // Update metrics
+            updateMetrics(data);
+            
+            // Update charts
+            updateCharts(data);
+            
+            // Update activity log
+            updateActivityLog(data);
+            
+            // Update predictions
+            updatePredictions(data);
+        }
+
+        // Initialize charts and start real-time updates
+        initializeCharts();
+        setInterval(() => {
+            ws.send(JSON.stringify({ type: 'request_update' }));
+        }, 1000);
+    </script>
+</body>
+</html> 

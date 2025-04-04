@@ -1,0 +1,6 @@
+#!C:\Users\ermiy\Desktop\aimarketing\aimarketing\tensorflow_env\Scripts\python.exe
+
+from deepspeed.launcher.runner import main
+
+if __name__ == '__main__':
+    main()

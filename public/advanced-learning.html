@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Advanced AI Learning Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three"></script>
+    <link rel="stylesheet" href="styles/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="dashboard-nav">
+            <ul>
+                <li><a href="#realtime">Realtime</a></li>
+                <li><a href="#analytics">Analytics</a></li>
+                <li><a href="#paths">Learning Paths</a></li>
+                <li><a href="#insights">Insights</a></li>
+            </ul>
+        </nav>
+
+        <div class="dashboard-content">
+            <section id="realtime" class="dashboard-section">
+                <h2>Realtime Learning</h2>
+                <div class="realtime-grid">
+                    <div class="card">
+                        <h3>Current Activity</h3>
+                        <div id="activity-visual"></div>
+                    </div>
+                    <div class="card">
+                        <h3>Pattern Frequency</h3>
+                        <canvas id="pattern-chart"></canvas>
+                    </div>
+                    <div class="card">
+                        <h3>Topic Distribution</h3>
+                        <div id="topic-tree"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="analytics" class="dashboard-section">
+                <h2>Learning Analytics</h2>
+                <div class="analytics-grid">
+                    <div class="card">
+                        <h3>Performance Metrics</h3>
+                        <canvas id="performance-chart"></canvas>
+                    </div>
+                    <div class="card">
+                        <h3>Knowledge Graph</h3>
+                        <div id="knowledge-graph"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="paths" class="dashboard-section">
+                <h2>Learning Paths</h2>
+                <div class="paths-grid">
+                    <div class="card">
+                        <h3>Current Progress</h3>
+                        <div id="paths-progress"></div>
+                    </div>
+                    <div class="card">
+                        <h3>Customize Path</h3>
+                        <div id="path-customization"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html> 
