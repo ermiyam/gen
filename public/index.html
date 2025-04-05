@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distributed Marketing AI Dashboard</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f0f2f5;
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-value {
+            font-size: 24px;
+            color: #0066ff;
+            font-weight: bold;
+        }
+        .learning-feed {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            height: 400px;
+            overflow-y: auto;
+        }
+        .learning-item {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            animation: fadeIn 0.5s ease-in;
+        }
+        .learning-item.highlight {
+            background: #e3f2fd;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .chat-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 40px);
+        }
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .chat-input button {
+            padding: 10px 20px;
+            background: #0066ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .network-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #0066ff;
+            color: white;
+        }
+
+        .distributed-node {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 5px;
+            border-radius: 4px;
+            background: #e3f2fd;
+        }
+
+        .sync-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .sync-active {
+            background: #4caf50;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .learning-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .learning-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .learning-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="network-status">
+            <div class="sync-indicator"></div>
+            <span id="networkStatus">Connecting...</span>
+        </div>
+
+        <h1>Distributed Marketing AI Dashboard</h1>
+        
+        <div class="learning-grid">
+            <!-- Stats cards will be dynamically inserted here -->
+        </div>
+
+        <div class="distributed-nodes" id="nodeList">
+            <!-- Connected nodes will appear here -->
+        </div>
+
+        <div class="learning-feed" id="learningFeed">
+            <!-- Learning updates will appear here -->
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let connectedNodes = new Set();
+
+        socket.on('connect', () => {
+            document.getElementById('networkStatus').textContent = 'Connected';
+            document.querySelector('.sync-indicator').classList.add('sync-active');
+        });
+
+        socket.on('distributed-update', (update) => {
+            connectedNodes.add(update.nodeId);
+            updateNodeList();
+            updateStats(update.stats);
+            addLearningItem(update);
+        });
+
+        function updateNodeList() {
+            const nodeList = document.getElementById('nodeList');
+            nodeList.innerHTML = '';
+            connectedNodes.forEach(nodeId => {
+                const node = document.createElement('div');
+                node.className = 'distributed-node';
+                node.textContent = `Node: ${nodeId}`;
+                nodeList.appendChild(node);
+            });
+        }
+
+        function updateStats(stats) {
+            const grid = document.querySelector('.learning-grid');
+            grid.innerHTML = '';
+            
+            Object.entries(stats).forEach(([key, value]) => {
+                const card = document.createElement('div');
+                card.className = 'learning-card';
+                card.innerHTML = `
+                    <h3>${formatStatName(key)}</h3>
+                    <div class="stat-value">${value}</div>
+                    <div class="stat-graph">
+                        <canvas id="graph-${key}"></canvas>
+                    </div>
+                `;
+                grid.appendChild(card);
+                initializeGraph(key, value);
+            });
+        }
+
+        function formatStatName(key) {
+            return key
+                .replace(/([A-Z])/g, ' $1')
+                .replace(/^./, str => str.toUpperCase());
+        }
+
+        function initializeGraph(key, value) {
+            // Initialize graph for each stat (using Chart.js or similar)
+            // This is where you'd add real-time graphing
+        }
+
+        function addLearningItem(update) {
+            const feed = document.getElementById('learningFeed');
+            const item = document.createElement('div');
+            item.className = 'learning-item';
+            item.innerHTML = `
+                <div class="learning-header">
+                    <span class="node-id">${update.nodeId}</span>
+                    <span class="timestamp">${new Date(update.timestamp).toLocaleTimeString()}</span>
+                </div>
+                <div class="learning-content">${update.data}</div>
+            `;
+            feed.insertBefore(item, feed.firstChild);
+
+            if (feed.children.length > 100) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+    </script>
+</body>
+</html>
